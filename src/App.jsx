@@ -6,7 +6,8 @@ import {
   CreditCard, ShieldCheck, LogOut, Menu,
   TrendingUp, BriefcaseBusiness
 } from 'lucide-react';
-import './style.css';
+import { Analytics } from '@vercel/analytics/react';
+import './styles.css';
 
 export default function App() {
   const [session, setSession] = useState(null);
@@ -92,47 +93,60 @@ export default function App() {
   }
 
   if (loading) {
-    return <main className="loading">Loading Cafun Creditors...</main>;
+    return (
+      <>
+        <main className="loading">Loading Cafun Creditors...</main>
+        <Analytics />
+      </>
+    );
   }
 
   if (!session) {
     return (
-      <main className="login-page">
-        <form className="login-card" onSubmit={signIn}>
-          <div className="brand-icon"><ShieldCheck size={34} /></div>
-          <h1>CAFUN CREDITORS</h1>
-          <p>Loan Management System</p>
-          <h2>Welcome back</h2>
-          <label>Email address</label>
-          <input
-            type="email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            placeholder="Enter your email"
-            required
-          />
-          <label>Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            placeholder="Enter your password"
-            required
-          />
-          {error && <p className="error">{error}</p>}
-          <button type="submit">Sign in</button>
-          <small>Secure access to your credit management system.</small>
-        </form>
-      </main>
+      <>
+        <main className="login-page">
+          <form className="login-card" onSubmit={signIn}>
+            <div className="brand-icon"><ShieldCheck size={34} /></div>
+            <h1>CAFUN CREDITORS</h1>
+            <p>Loan Management System</p>
+            <h2>Welcome back</h2>
+            <label>Email address</label>
+            <input
+              type="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              required
+            />
+            <label>Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              placeholder="Enter your password"
+              required
+            />
+            {error && <p className="error">{error}</p>}
+            <button type="submit">Sign in</button>
+            <small>Secure access to your credit management system.</small>
+          </form>
+        </main>
+        <Analytics />
+      </>
     );
   }
 
   if (!profile) {
-    return <main className="loading">
-      Your account profile could not be loaded. Please contact the administrator.
-      {error && <p className="error">{error}</p>}
-      <button onClick={signOut}>Sign out</button>
-    </main>;
+    return (
+      <>
+        <main className="loading">
+          Your account profile could not be loaded. Please contact the administrator.
+          {error && <p className="error">{error}</p>}
+          <button onClick={signOut}>Sign out</button>
+        </main>
+        <Analytics />
+      </>
+    );
   }
 
   const navigation = [
@@ -146,81 +160,84 @@ export default function App() {
   ];
 
   return (
-    <div className="app-shell">
-      <aside className="sidebar">
-        <div className="sidebar-brand">
-          <ShieldCheck size={30} />
-          <div><strong>CAFUN</strong><small>CREDITORS</small></div>
-        </div>
-        <p className="nav-label">MAIN MENU</p>
-        {navigation.map(item => {
-          const Icon = item.icon;
-          return (
-            <button
-              key={item.name}
-              className={page === item.name ? 'nav-item active' : 'nav-item'}
-              onClick={() => setPage(item.name)}
-            >
-              <Icon size={19} /> {item.name}
-            </button>
-          );
-        })}
-        <button className="nav-item logout" onClick={signOut}>
-          <LogOut size={19} /> Sign out
-        </button>
-      </aside>
-
-      <main className="main-area">
-        <header className="topbar">
-          <div>
-            <span>CAFUN CREDITORS / </span>{page.toUpperCase()}
+    <>
+      <div className="app-shell">
+        <aside className="sidebar">
+          <div className="sidebar-brand">
+            <ShieldCheck size={30} />
+            <div><strong>CAFUN</strong><small>CREDITORS</small></div>
           </div>
-          <div className="user-info">
-            <span>{profile.full_name || session.user.email}</span>
-            <small>{profile.role}</small>
-          </div>
-        </header>
+          <p className="nav-label">MAIN MENU</p>
+          {navigation.map(item => {
+            const Icon = item.icon;
+            return (
+              <button
+                key={item.name}
+                className={page === item.name ? 'nav-item active' : 'nav-item'}
+                onClick={() => setPage(item.name)}
+              >
+                <Icon size={19} /> {item.name}
+              </button>
+            );
+          })}
+          <button className="nav-item logout" onClick={signOut}>
+            <LogOut size={19} /> Sign out
+          </button>
+        </aside>
 
-        <section className="content">
-          <h1>{page}</h1>
-          <p className="welcome">
-            Welcome, {profile.full_name || 'User'}. Manage your account here.
-          </p>
+        <main className="main-area">
+          <header className="topbar">
+            <div>
+              <span>CAFUN CREDITORS / </span>{page.toUpperCase()}
+            </div>
+            <div className="user-info">
+              <span>{profile.full_name || session.user.email}</span>
+              <small>{profile.role}</small>
+            </div>
+          </header>
 
-          {profile.role === 'admin' && page === 'Dashboard' && (
-            <>
-              <div className="stat-grid">
-                <Stat title="Total Clients" value={stats.clients} />
-                <Stat title="Loan Accounts" value={stats.loans} />
-                <Stat title="Applications" value={stats.applications} />
-                <Stat title="Repayment Records" value={stats.repayments} />
-              </div>
+          <section className="content">
+            <h1>{page}</h1>
+            <p className="welcome">
+              Welcome, {profile.full_name || 'User'}. Manage your account here.
+            </p>
+
+            {profile.role === 'admin' && page === 'Dashboard' && (
+              <>
+                <div className="stat-grid">
+                  <Stat title="Total Clients" value={stats.clients} />
+                  <Stat title="Loan Accounts" value={stats.loans} />
+                  <Stat title="Applications" value={stats.applications} />
+                  <Stat title="Repayment Records" value={stats.repayments} />
+                </div>
+                <div className="panel">
+                  <h2>Business overview</h2>
+                  <p>Currency: MWK</p>
+                  <p>Default monthly interest: 50%</p>
+                  <p>Interest method: Simple interest on original principal</p>
+                  <button onClick={loadStats}>Refresh figures</button>
+                </div>
+              </>
+            )}
+
+            {profile.role === 'client' && (
               <div className="panel">
-                <h2>Business overview</h2>
-                <p>Currency: MWK</p>
-                <p>Default monthly interest: 50%</p>
-                <p>Interest method: Simple interest on original principal</p>
-                <button onClick={loadStats}>Refresh figures</button>
+                <h2>Client portal</h2>
+                <p>Your account is active. Your loan information will appear here.</p>
               </div>
-            </>
-          )}
+            )}
 
-          {profile.role === 'client' && (
-            <div className="panel">
-              <h2>Client portal</h2>
-              <p>Your account is active. Your loan information will appear here.</p>
-            </div>
-          )}
-
-          {page !== 'Dashboard' && (
-            <div className="panel">
-              <h2>{page}</h2>
-              <p>This section is being prepared for the Cafun Creditors management system.</p>
-            </div>
-          )}
-        </section>
-      </main>
-    </div>
+            {page !== 'Dashboard' && (
+              <div className="panel">
+                <h2>{page}</h2>
+                <p>This section is being prepared for the Cafun Creditors management system.</p>
+              </div>
+            )}
+          </section>
+        </main>
+      </div>
+      <Analytics />
+    </>
   );
 }
 
